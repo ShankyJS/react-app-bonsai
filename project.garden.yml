@@ -14,8 +14,6 @@ providers:
     context: docker-desktop # Make sure to change this to your own context
     namespace: ${var.DEFAULT_NAMESPACE}
     defaultHostname: ${var.base-hostname}
-    setupIngressController: nginx
-
 
 variables:
-  DEFAULT_NAMESPACE: default
+  DEFAULT_NAMESPACE: garden-bonsai-migration

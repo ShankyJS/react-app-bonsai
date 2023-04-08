@@ -1,21 +1,28 @@
 # Builds the frontend React App
 kind: Build
 type: container
-name: react-app
+name: frontend
 description: React App example
 ---
 # Deploys the frontend React App
 kind: Deploy
 type: container
-name: react-app
+name: frontend
 description: React App deployment example
-build: react-app # Uses the build from the previous snippet
+build: frontend # Uses the build from the previous snippet
 # If it was the case, we could set multiple dependencies
 # to different tasks using the following syntax:
 # dependencies: [deploy.backend] <--- Creates a dependency on the deploy task of the backend module
 
 spec:
-  args: [npm, start]
+  # args: [npm, start]
+  sync:
+    paths:
+    - source: ./src
+      target: /app/src
+      exclude: [node_modules]
+    - source: package.json
+      target: /package.json
   ports:
     - name: http
       protocol: TCP
@@ -24,14 +31,6 @@ spec:
     - path: /
       hostname: "react.${var.base-hostname}"
       port: http
-  sync:
-    command: [npm, start]
-    sync:
-      - source: ./src
-        target: /app/src
-        exclude: [node_modules]
-      - source: package.json
-        target: /package.json
 
 ---
 # Setup tests
@@ -40,9 +39,9 @@ type: kubernetes-exec # <-- This means the test will be executed in the previous
 name: unit
 description: Unit tests for the frontend React App
 dependencies:
-  - deploy.react-app # <-- This means the test will be executed after the deploy task of the frontend module
+  - deploy.frontend # <-- This means the test will be executed after the deploy task of the frontend module
 spec:
   args: ["npm", "test"]
   resource:
     kind: Deployment
-    name: react-app
+    name: frontend
